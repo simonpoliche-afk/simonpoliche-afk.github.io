@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo interna — Confirmo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c3aed'/%3E%3Cstop offset='1' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M32 52 L45 65 L70 38' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1c2333; background:#f4f4fa; line-height:1.5; }
+  .wrap { max-width:1060px; margin:0 auto; padding:24px 18px 60px; }
+  header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .mark { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#2563eb); display:flex; align-items:center; justify-content:center; color:#fff; font-size:19px; font-weight:700; }
+  .brand { font-size:21px; font-weight:700; }
+  .badge { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; }
+  h1 { font-size:26px; margin:18px 0 4px; letter-spacing:-.02em; }
+  .sub { color:#5b6478; margin-bottom:22px; }
+  .grid { display:grid; grid-template-columns:1fr 380px; gap:22px; align-items:start; }
+  @media (max-width:880px){ .grid{ grid-template-columns:1fr; } }
+  .card { background:#fff; border:1px solid #e6e7f0; border-radius:16px; padding:22px; margin-bottom:18px; }
+  .card h2 { font-size:17px; margin-bottom:4px; }
+  .card .hint { color:#5b6478; font-size:13.5px; margin-bottom:14px; }
+  .biz { display:flex; gap:12px; align-items:center; }
+  .biz .avatar { width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg,#111827,#374151); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; }
+  .biz b { font-size:17px; } .biz span { color:#5b6478; font-size:13.5px; display:block; }
+  .lbl { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#6d28d9; margin:16px 0 8px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:1.5px solid #d9dae8; background:#fff; border-radius:999px; padding:8px 14px; font-size:14.5px; cursor:pointer; }
+  .chip small { color:#5b6478; }
+  .chip.sel { border-color:#6d28d9; background:#f3efff; font-weight:600; }
+  .chip:disabled { opacity:.35; cursor:not-allowed; text-decoration:line-through; }
+  input[type=text], input[type=tel] { width:100%; padding:11px 13px; border:1.5px solid #d9dae8; border-radius:10px; font-size:15px; margin-bottom:10px; }
+  .cta { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; border:none; font-weight:700; padding:14px; border-radius:12px; font-size:16px; cursor:pointer; margin-top:6px; }
+  .cta:disabled { opacity:.4; cursor:not-allowed; }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .stat { background:#f8f8fd; border:1px solid #e6e7f0; border-radius:12px; padding:12px; text-align:center; }
+  .stat b { font-size:24px; display:block; } .stat span { font-size:12px; color:#5b6478; }
+  .agenda { list-style:none; }
+  .agenda li { display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px dashed #e6e7f0; font-size:14.5px; }
+  .agenda li:last-child { border-bottom:none; }
+  .tag { font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+  .t-pend { background:#fef3c7; color:#92400e; } .t-conf { background:#dcfce7; color:#166534; }
+  .t-noshow { background:#fee2e2; color:#991b1b; } .t-canc { background:#e5e7eb; color:#374151; }
+  .empty { color:#5b6478; font-size:14px; }
+  /* Phone */
+  .phone { background:#111827; border-radius:34px; padding:12px; box-shadow:0 18px 40px rgba(20,20,60,.25); position:sticky; top:16px; }
+  .screen { background:#ece5dd; border-radius:26px; overflow:hidden; display:flex; flex-direction:column; height:560px; }
+  .wa-head { background:#075e54; color:#fff; padding:12px 14px; }
+  .wa-head b { font-size:15px; display:block; } .wa-head span { font-size:12px; opacity:.85; }
+  .wa-body { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:8px; }
+  .msg { max-width:82%; padding:9px 11px; border-radius:10px; font-size:13.8px; white-space:pre-line; box-shadow:0 1px 1px rgba(0,0,0,.08); }
+  .msg.in { background:#fff; align-self:flex-start; border-top-left-radius:2px; }
+  .msg.out { background:#dcf8c6; align-self:flex-end; border-top-right-radius:2px; }
+  .msg.sys { background:#fdf3c7; align-self:center; font-size:12px; color:#665c1e; text-align:center; }
+  .msg .who { font-size:11px; font-weight:700; color:#6d28d9; display:block; margin-bottom:2px; }
+  .msg time { display:block; text-align:right; font-size:10.5px; color:#8a8f7a; margin-top:3px; }
+  .sim { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .sim button { flex:1 1 46%; border:1.5px solid #6d28d9; color:#6d28d9; background:#fff; font-weight:600; font-size:13.5px; padding:10px 8px; border-radius:10px; cursor:pointer; }
+  .sim button:disabled { opacity:.35; cursor:not-allowed; }
+  .note { font-size:12.5px; color:#5b6478; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">✓</div>
+    <div class="brand">Confirmo</div>
+    <span class="badge">DEMO INTERNA · PUERTAS ADENTRO · SIN COBROS NI ENVÍOS REALES</span>
+  </header>
+
+  <h1>Así se vive una reserva, de punta a punta</h1>
+  <p class="sub">A la izquierda, lo que hace el cliente en el link del negocio. A la derecha, el WhatsApp tal como lo recibiría — desde el número del negocio. Abajo del teléfono están los botones para simular lo que pasa después.</p>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="biz">
+          <div class="avatar">DR</div>
+          <div><b>Barbería Don Rafa</b><span>Col. Narvarte, CDMX · Negocio de prueba</span></div>
+        </div>
+
+        <div class="lbl">1 · Servicio</div>
+        <div class="chips" id="services"></div>
+
+        <div class="lbl">2 · Profesional</div>
+        <div class="chips" id="pros"></div>
+
+        <div class="lbl">3 · Día y hora</div>
+        <div class="chips" id="slots"></div>
+
+        <div class="lbl">4 · Tus datos</div>
+        <input type="text" id="cname" placeholder="Tu nombre" value="Diego">
+        <input type="tel" id="cphone" placeholder="Tu WhatsApp" value="+52 55 1234 5678">
+        <button class="cta" id="bookBtn">Reservar mi turno</button>
+        <p class="note">En el producto real este paso tarda ~30 segundos y no pide crear ninguna cuenta.</p>
+      </div>
+
+      <div class="card">
+        <h2>Panel del dueño</h2>
+        <p class="hint">Lo que Don Rafa ve sin tener que preguntar nada.</p>
+        <div class="stats">
+          <div class="stat"><b id="stRes">0</b><span>Reservas de hoy</span></div>
+          <div class="stat"><b id="stConf">0</b><span>Confirmadas</span></div>
+          <div class="stat"><b id="stNo">0</b><span>Plantones</span></div>
+          <div class="stat"><b id="stMsg">0<span style="font-size:13px;color:#5b6478">/600</span></b><span>Mensajes del cupo (MX)</span></div>
+        </div>
+        <div class="lbl">Agenda de hoy</div>
+        <ul class="agenda" id="agenda"><li class="empty">Todavía no hay reservas. Hacé la primera desde el formulario.</li></ul>
+        <div class="lbl">Lista de espera</div>
+        <p class="empty" id="waitlist">Valeria está en lista de espera por un turno de hoy. Si se libera uno, Confirmo se lo ofrece solo.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <div class="screen">
+          <div class="wa-head"><b>Barbería Don Rafa</b><span>+52 55 9876 5432 · número del negocio</span></div>
+          <div class="wa-body" id="chat">
+            <div class="msg sys">Simulación: estos son los mensajes automáticos de Confirmo, con los textos del kit del piloto.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sim">
+        <button id="btnReminder">⏰ Pasa un día → recordatorio</button>
+        <button id="btnConfirm">✅ El cliente responde CONFIRMO</button>
+        <button id="btnReprog">🔁 El cliente responde REPROGRAMO</button>
+        <button id="btnNoshow">🚫 El cliente no se presenta</button>
+        <button id="btnSummary">☀️ Resumen del dueño (8:00)</button>
+      </div>
+      <p class="note">Los botones se activan según el estado de la última reserva. Recargá la página para empezar de cero.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const SERVICES = [
+  {id:'corte', name:'Corte', price:250, mins:30},
+  {id:'cortebarba', name:'Corte + barba', price:380, mins:50},
+  {id:'diseno', name:'Diseño / freestyle', price:300, mins:40},
+];
+const PROS = ['Rafa','Iván','Sin preferencia'];
+const SLOTS = ['10:00','11:30','13:00','16:00','17:30','19:00'];
+let sel = {service:SERVICES[0], pro:PROS[0], slot:null};
+let bookings = [], msgs = 0, lastId = null, waitlistUsed = false;
+
+function chips(elId, items, render, isSel, onPick, disabledFn){
+  const el = document.getElementById(elId); el.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button'); b.className='chip'+(isSel(it)?' sel':'');
+    b.innerHTML=render(it); if(disabledFn && disabledFn(it)) b.disabled=true;
+    b.onclick=()=>{ onPick(it); refresh(); }; el.appendChild(b);
+  });
+}
+function slotTaken(s){ return bookings.some(b=>b.slot===s && b.status!=='cancelada'); }
+
+function refresh(){
+  chips('services', SERVICES, s=>`${s.name} <small>$${s.price} MXN · ${s.mins} min</small>`, s=>sel.service.id===s.id, s=>sel.service=s);
+  chips('pros', PROS, p=>p, p=>sel.pro===p, p=>sel.pro=p);
+  chips('slots', SLOTS, s=>s, s=>sel.slot===s, s=>sel.slot=s, s=>slotTaken(s));
+  document.getElementById('bookBtn').disabled = !sel.slot;
+  renderPanel();
+}
+function now(){ const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
+function bubble(html, cls, who){
+  const c=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg '+cls;
+  d.innerHTML=(who?`<span class="who">${who}</span>`:'')+html+`<time>${now()} ✓✓</time>`;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+function countMsg(n){ msgs+=n; renderPanel(); }
+function tag(st){ return st==='confirmada'?'<span class="tag t-conf">Confirmada</span>':st==='noshow'?'<span class="tag t-noshow">Plantón</span>':st==='cancelada'?'<span class="tag t-canc">Reprogramada</span>':'<span class="tag t-pend">Pendiente</span>'; }
+function renderPanel(){
+  const ag=document.getElementById('agenda');
+  const today=bookings.filter(b=>b.status!=='cancelada');
+  document.getElementById('stRes').textContent=today.length;
+  document.getElementById('stConf').textContent=bookings.filter(b=>b.status==='confirmada').length;
+  document.getElementById('stNo').textContent=bookings.filter(b=>b.status==='noshow').length;
+  document.getElementById('stMsg').innerHTML=msgs+'<span style="font-size:13px;color:#5b6478">/600</span>';
+  if(!bookings.length){ ag.innerHTML='<li class="empty">Todavía no hay reservas. Hacé la primera desde el formulario.</li>'; }
+  else{
+    ag.innerHTML='';
+    bookings.slice().sort((a,b)=>a.slot.localeCompare(b.slot)).forEach(b=>{
+      const li=document.createElement('li');
+      li.innerHTML=`<span><b>${b.slot}</b> · ${b.service.name} con ${b.pro} — ${b.name}</span>${tag(b.status)}`;
+      ag.appendChild(li);
+    });
+  }
+  const last=bookings.find(b=>b.id===lastId);
+  const active = last && last.status==='pendiente';
+  document.getElementById('btnReminder').disabled = !(active && !last.reminded);
+  document.getElementById('btnConfirm').disabled = !(active && last.reminded);
+  document.getElementById('btnReprog').disabled = !(active && last.reminded);
+  document.getElementById('btnNoshow').disabled = !(last && last.status==='confirmada');
+  document.getElementById('btnSummary').disabled = bookings.length===0;
+}
+
+document.getElementById('bookBtn').onclick=()=>{
+  const name=document.getElementById('cname').value.trim()||'Cliente';
+  const b={id:Date.now(), name, service:sel.service, pro:sel.pro, slot:sel.slot, status:'pendiente', reminded:false};
+  bookings.push(b); lastId=b.id;
+  bubble(`¡Hola ${name}! ✅ Tu reserva en <b>Barbería Don Rafa</b> quedó confirmada:\n\n💈 ${b.service.name} con ${b.pro}\n🕐 Hoy a las ${b.slot} hs\n💲 $${b.service.price} MXN\n\nTe escribo mañana para recordártelo. Si necesitas cambiar el horario, responde a este mensaje.`,'in','Confirmo · desde el número del negocio');
+  countMsg(1);
+  sel.slot=null; refresh();
+};
+
+document.getElementById('btnReminder').onclick=()=>{
+  const b=bookings.find(x=>x.id===lastId); if(!b) return; b.reminded=true;
+  bubble(`¡Hola ${b.name}! Te recuerdo tu turno de hoy en <b>Barbería Don Rafa</b>:\n\n💈 ${b.service.name} con ${b.pro} — ${b.slot} hs\n\nResponde <b>CONFIRMO</b> si vienes seguro, o <b>REPROGRAMO</b> si necesitas otro horario y te ayudamos de inmediato.`,'in','Confirmo · recordatorio');
+  countMsg(1); refresh();
+};
+document.getElementById('btnConfirm').onclick=()=>{
+  const b=bookings.find(x=>x.id===lastId); if(!b) return;
+  bubble(`CONFIRMO`,'out', b.name);
+  b.status='confirmada';
+  bubble(`¡Perfecto, ${b.name}! 👍 Te esperamos hoy a las ${b.slot} hs. Cualquier cambio, escríbenos por aquí.`,'in','Confirmo');
+  refresh();
+};
+document.getElementById('btnReprog').onclick=()=>{
+  const b=bookings.find(x=>x.id===lastId); if(!b) return;
+  bubble(`REPROGRAMO`,'out', b.name);
+  b.status='cancelada';
+  bubble(`Sin problema, ${b.name}. Liberé tu turno de las ${b.slot} hs. ¿Qué otro horario te queda bien? Te paso los disponibles por aquí mismo.`,'in','Confirmo');
+  if(!waitlistUsed){
+    waitlistUsed=true;
+    setTimeout(()=>{
+      bubble(`¡Hola Valeria! Se liberó un turno hoy a las ${b.slot} hs en <b>Barbería Don Rafa</b> (${b.service.name}). Estabas en lista de espera: ¿lo quieres? Responde <b>SÍ</b> y queda tuyo.`,'in','Confirmo · lista de espera');
+      countMsg(1);
+      document.getElementById('waitlist').textContent='Valeria recibió la oferta del turno liberado. El hueco no quedó vacío.';
+      renderPanel();
+    }, 900);
+  }
+  refresh();
+};
+document.getElementById('btnNoshow').onclick=()=>{
+  const b=bookings.find(x=>x.id===lastId); if(!b) return; b.status='noshow';
+  bubble(`Hola ${b.name}, te esperábamos hoy a las ${b.slot} hs y no pudimos atenderte. ¿Quieres que te reagende? Tengo lugar mañana a la misma hora. Responde <b>SÍ</b> y te lo aparto.`,'in','Confirmo · recuperar al cliente');
+  countMsg(1); refresh();
+};
+document.getElementById('btnSummary').onclick=()=>{
+  const list=bookings.filter(b=>b.status!=='cancelada').sort((a,b)=>a.slot.localeCompare(b.slot))
+    .map(b=>`· ${b.slot} — ${b.name} (${b.service.name}, ${b.pro}) ${b.status==='confirmada'?'✅':b.status==='noshow'?'🚫 plantón':'⏳ por confirmar'}`).join('\n') || 'Sin reservas.';
+  const conf=bookings.filter(b=>b.status==='confirmada').length, no=bookings.filter(b=>b.status==='noshow').length;
+  bubble(`☀️ <b>Buenos días, Rafa — tu día en Barbería Don Rafa:</b>\n\n${list}\n\n✅ Confirmadas: ${conf} · 🚫 Plantones: ${no} · ✉️ Mensajes usados: ${msgs} de 600\n\nQue tengas un gran día. Sin plantones. 💪`,'in','Confirmo · resumen para el dueño');
+  refresh();
+};
+refresh();
+</script>
+</body>
+</html>
