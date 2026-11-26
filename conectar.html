@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Confirmo — Conectar WhatsApp (prueba interna)</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f6f7f9;color:#14202e;line-height:1.55}
+  .wrap{max-width:640px;margin:0 auto;padding:32px 20px 56px}
+  .badge{display:inline-block;background:#14202e;color:#fff;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;margin-bottom:18px}
+  h1{font-size:28px;line-height:1.2;margin-bottom:10px}
+  p{color:#43536a;margin-bottom:14px}
+  .card{background:#fff;border:1px solid #e3e8ef;border-radius:16px;padding:22px;margin:20px 0;box-shadow:0 6px 24px rgba(20,32,46,.06)}
+  .steps{margin:0 0 6px 18px;color:#43536a}
+  .steps li{margin-bottom:8px}
+  button.cta{display:block;width:100%;background:#1faa55;color:#fff;border:none;font-size:17px;font-weight:700;padding:15px 18px;border-radius:12px;cursor:pointer;margin-top:14px}
+  button.cta:hover{background:#178f47}
+  .result{display:none;background:#0f1c2b;color:#d7f5e3;border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;margin-top:16px}
+  .warn{background:#fff7e6;border:1px solid #f0d48a;border-radius:12px;padding:14px 16px;color:#6b5310;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">PRUEBA INTERNA · CONEXIÓN POR QR</span>
+  <h1>Conectar el WhatsApp del negocio</h1>
+  <p>Así conecta su número un cliente de Confirmo: sin códigos por SMS y sin perder su app. El número sigue funcionando en su celular y queda conectado a Confirmo al mismo tiempo.</p>
+
+  <div class="card">
+    <ol class="steps">
+      <li>Ten a mano el <b>teléfono con el WhatsApp Business</b> que vas a conectar.</li>
+      <li>Aprieta el botón y sigue el flujo oficial de Meta: escribe el número de tu negocio.</li>
+      <li>Cuando aparezca el <b>código QR</b>, escanealo desde tu WhatsApp Business.</li>
+      <li>Listo: el número queda conectado. Vas a ver el resultado aquí abajo.</li>
+    </ol>
+    <button class="cta" onclick="launchSignup()">Conectar mi WhatsApp con QR</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="warn">Si el flujo te ofrece verificar el número con un código por SMS o llamada, <b>no lo confirmes</b>: ese no es el camino de Confirmo. Cerrá la ventana y avisa.</div>
+</div>
+
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js"></script>
+<script>
+  const APP_ID = '1159553893329643';
+  const CONFIG_ID = '1881979509601884';
+
+  window.fbAsyncInit = function () {
+    FB.init({ appId: APP_ID, autoLogAppEvents: true, xfbml: true, version: 'v21.0' });
+  };
+
+  function show(text) {
+    const el = document.getElementById('result');
+    el.style.display = 'block';
+    el.textContent += (el.textContent ? '\n' : '') + text;
+  }
+
+  window.addEventListener('message', (event) => {
+    if (!event.origin || !event.origin.endsWith('facebook.com')) return;
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'WA_EMBEDDED_SIGNUP') {
+        show('Evento: ' + data.event + '\nDatos de la sesión: ' + JSON.stringify(data.data, null, 2));
+      }
+    } catch (e) { /* mensajes ajenos al flujo */ }
+  });
+
+  function fbLoginCallback(response) {
+    if (response.authResponse && response.authResponse.code) {
+      show('Código de autorización recibido: ' + response.authResponse.code);
+    } else {
+      show('El flujo terminó sin código (cancelado o cerrado).');
+    }
+  }
+
+  function launchSignup() {
+    if (CONFIG_ID === 'CONFIG_ID_A_COMPLETAR') {
+      show('Falta cargar el ID de configuración del registro incorporado.');
+      return;
+    }
+    FB.login(fbLoginCallback, {
+      config_id: CONFIG_ID,
+      response_type: 'code',
+      override_default_response_type: true,
+      extras: { setup: {}, featureType: '', sessionInfoVersion: '3' }
+    });
+  }
+</script>
+</body>
+</html>
