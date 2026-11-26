@@ -93,7 +93,7 @@
   </header>
 
   <h1>Reservar es responder 5 preguntas, una por pantalla</h1>
-  <p class="sub">Así interactúa el cliente: llega desde el link del negocio en su celular, elige paso a paso y termina en el tilde. A la derecha, el WhatsApp que recibe — desde el número del negocio — y abajo, lo que ve el dueño.</p>
+  <p class="sub">Así interactúa el cliente: llega desde el link del negocio en su celular, elige paso a paso, paga la seña obligatoria con comprobante y el turno se confirma recién cuando el negocio la valida. Los días y horarios que se ofrecen <b>salen del Google Calendar de cada profesional</b>, no de una grilla cargada a mano. A la derecha, el WhatsApp que recibe — desde el número del negocio — y abajo, lo que ve el dueño.</p>
 
   <div class="grid">
     <div>
@@ -133,6 +133,7 @@
         </div>
       </div>
       <div class="sim">
+        <button id="btnValidate">✔️ El negocio valida el comprobante</button>
         <button id="btnReminder">⏰ Llega el momento del recordatorio</button>
         <button id="btnConfirm">✅ El cliente responde CONFIRMO</button>
         <button id="btnReprog">🔁 El cliente responde REPROGRAMO</button>
@@ -153,8 +154,31 @@ const SERVICES = [
 const PROS = ['Rafa','Iván','El primero disponible'];
 const SLOT_GROUPS = [ ['Mañana',['09:00','10:00','11:30']], ['Tarde',['13:00','16:00','17:30']], ['Noche',['19:00','20:00']] ];
 const SENA = 100;
-// Compromiso personal del dueño HOY (Google Calendar): bloquea las 13:00 de Rafa
-const CAL_BLOCK = { dayOffset:0, slot:'13:00', label:'13:00–14:00 · Compromiso personal' };
+// === Google Calendar simulado: la disponibilidad SALE de acá, no de una grilla de Confirmo ===
+// win: ventana de atención por día de semana (0=domingo), en minutos desde medianoche. null = no trabaja.
+// busy: eventos que bloquean, por cantidad de días desde hoy.
+const GC = {
+  'Rafa': { win:{0:null, 1:[540,1200], 2:[540,1200], 3:[540,1200], 4:[540,1200], 5:[540,1200], 6:[540,1200]},
+            busy:{ 0:[{from:780, to:840, label:'13:00–14:00 · Compromiso personal'}] } },
+  'Iván': { win:{0:null, 1:null, 2:[600,1140], 3:[600,1140], 4:[600,1140], 5:[600,1140], 6:[600,1140]},
+            busy:{ 1:[{from:960, to:1020, label:'16:00–17:00 · Banco'}] } },
+};
+function mins(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function calPro(){ return (sel.pro && sel.pro!=='El primero disponible') ? sel.pro : 'Rafa'; }
+function slotAvailable(dayOff, slot){
+  const pro = GC[calPro()]; if(!pro) return false;
+  const wd = dayDate(dayOff).getDay();
+  const win = pro.win[wd]; if(!win) return false;
+  const start = mins(slot), end = start + (sel.service ? sel.service.mins : 30);
+  if(start < win[0] || end > win[1]) return false;
+  for(const ev of (pro.busy[dayOff]||[])){ if(start < ev.to && end > ev.from) return false; }
+  return !bookings.some(b=>b.dayOff===dayOff && b.slot===slot && b.status!=='cancelada');
+}
+function dayAvailable(dayOff){
+  const pro = GC[calPro()]; if(!pro) return false;
+  if(!pro.win[dayDate(dayOff).getDay()]) return false;
+  return SLOT_GROUPS.flatMap(g=>g[1]).some(s=>slotAvailable(dayOff,s));
+}
 
 const fmtDay = d => d.toLocaleDateString('es-MX',{weekday:'long', day:'numeric', month:'long'});
 const shortDay = d => d.toLocaleDateString('es-MX',{weekday:'short'}).replace('.','');
@@ -164,11 +188,6 @@ function dayWord(offset, d){
   if(offset===1) return 'mañana';
   return 'el ' + fmtDay(d);
 }
-function taken(dayOff, slot){
-  if(dayOff===CAL_BLOCK.dayOffset && slot===CAL_BLOCK.slot) return true;
-  return bookings.some(b=>b.dayOff===dayOff && b.slot===slot && b.status!=='cancelada');
-}
-
 let step = 1;
 let sel = { service:null, pro:null, dayOff:null, slot:null, name:'', phone:'', sena:false };
 let bookings = [], msgs = 0, lastId = null, waitlistUsed = false;
@@ -194,12 +213,12 @@ function renderWizard(){
     const days=[0,1,2,3,4,5,6].map(o=>{
       const d=dayDate(o);
       const top = o===0?'Hoy':o===1?'Mañana':shortDay(d);
-      return `<button class="chip ${sel.dayOff===o?'sel':''}" onclick="pickDay(${o})"><b>${top}</b><span>${d.getDate()}/${d.getMonth()+1}</span></button>`;
+      return `<button class="chip ${sel.dayOff===o?'sel':''}" ${dayAvailable(o)?'':'disabled'} onclick="pickDay(${o})"><b>${top}</b><span>${d.getDate()}/${d.getMonth()+1}</span></button>`;
     }).join('');
     let slots='';
     if(sel.dayOff!==null){
-      slots = SLOT_GROUPS.map(([g,ss])=>`<div class="group-lbl">${g}</div><div class="chips">${ss.map(s=>`<button class="chip ${sel.slot===s?'sel':''}" ${taken(sel.dayOff,s)?'disabled':''} onclick="pickSlot('${s}')"><b>${s}</b></button>`).join('')}</div>`).join('')
-        + `<p class="note">Los horarios tachados ya están ocupados o bloqueados: no se ofrecen.</p>`;
+      slots = SLOT_GROUPS.map(([g,ss])=>`<div class="group-lbl">${g}</div><div class="chips">${ss.map(s=>`<button class="chip ${sel.slot===s?'sel':''}" ${slotAvailable(sel.dayOff,s)?'':'disabled'} onclick="pickSlot('${s}')"><b>${s}</b></button>`).join('')}</div>`).join('')
+        + `<p class="note">Estos días y horarios salen del <b>Google Calendar de ${calPro()}</b>: si no trabaja ese día, no aparece; si tiene algo agendado, ese horario se bloquea solo. Nada de esto se carga a mano en Confirmo.</p>`;
     }
     W.innerHTML = head(3,'Día y hora') + `<div class="q">¿Qué día?</div><div class="chips">${days}</div>`
       + (sel.dayOff!==null ? `<div class="q" style="margin-top:20px">¿A qué hora?</div>${slots}` : `<p class="note">Elige primero el día y te muestro los horarios libres.</p>`)
@@ -214,18 +233,18 @@ function renderWizard(){
   }
   if(step===5){
     const b=sel;
-    W.innerHTML = head(5,'Seña opcional') + `<div class="q">¿Aseguras tu turno con una seña?</div>
-      <div class="sena"><b>Seña de $${SENA} MXN</b> — se descuenta del precio de tu ${b.service.name} ($${b.service.price} MXN). Va a la cuenta de la barbería, no a Confirmo. Los turnos con seña casi nunca se plantan.</div>
-      <button class="cta" onclick="book(true)">Pagar seña de $${SENA} y reservar</button>
-      <button class="cta ghost" onclick="book(false)">Reservar sin seña</button>` + backBtn(4);
+    W.innerHTML = head(5,'Seña obligatoria') + `<div class="q">Último paso: la seña</div>
+      <div class="sena"><b>Sin seña no hay turno confirmado.</b> Son <b>$${SENA} MXN</b> que se descuentan de tu ${b.service.name} ($${b.service.price} MXN) y van a la cuenta de la barbería, no a Confirmo.</div>
+      <p class="note" style="margin-bottom:12px">Transfiere a la CLABE de Barbería Don Rafa: <b>012 180 01556667777 8</b> (o paga con Mercado Pago) y adjunta el comprobante. Tu turno queda <b>apartado por 30 minutos</b>: si el comprobante no llega, el turno se libera solo.</p>
+      <button class="cta" onclick="book()">📎 Ya pagué · Adjuntar comprobante</button>` + backBtn(4);
   }
   if(step===6){
     const b=bookings.find(x=>x.id===lastId);
     W.innerHTML = `<div class="success">
-      <div class="bigcheck">✓</div>
-      <h3>¡Listo, ${b.name}! Tu turno está confirmado</h3>
-      <p>Te enviamos la confirmación por WhatsApp desde el número de la barbería.</p>
-      <div class="ticket">💈 <b>${b.service.name}</b> con ${b.pro}<br>🗓️ ${fmtDay(b.date)} · 🕐 ${b.slot} hs<br>💲 $${b.service.price} MXN${b.sena?` · Seña pagada: $${SENA} MXN ✓`:''}</div>
+      <div class="bigcheck" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 12px 28px rgba(217,119,6,.35)">⏳</div>
+      <h3>Comprobante enviado, ${b.name}</h3>
+      <p>Tu turno quedó <b>apartado</b>. En cuanto la barbería valide tu seña, te llega la confirmación por WhatsApp: mira el teléfono de la derecha y valida el comprobante con los botones de simulación.</p>
+      <div class="ticket">💈 <b>${b.service.name}</b> con ${b.pro}<br>🗓️ ${fmtDay(b.date)} · 🕐 ${b.slot} hs<br>💲 $${b.service.price} MXN · Seña: $${SENA} MXN (en validación)</div>
       <button class="cta ghost" onclick="resetWizard()">Hacer otra reserva</button></div>`;
   }
 }
@@ -248,16 +267,17 @@ function bubble(html, cls, who){
   c.appendChild(d); c.scrollTop=c.scrollHeight;
 }
 function countMsg(n){ msgs+=n; renderPanel(); }
-function book(withSena){
+function book(){
   const d=dayDate(sel.dayOff);
   const b={ id:Date.now(), name:sel.name, service:sel.service, pro:sel.pro==='El primero disponible'?'Rafa':sel.pro,
-            dayOff:sel.dayOff, date:d, slot:sel.slot, sena:withSena, status:'pendiente', reminded:false };
+            dayOff:sel.dayOff, date:d, slot:sel.slot, sena:true, status:'esperando', reminded:false };
   bookings.push(b); lastId=b.id;
-  bubble(`¡Hola ${b.name}! ✅ Tu reserva en <b>Barbería Don Rafa</b> quedó confirmada:\n\n💈 ${b.service.name} con ${b.pro}\n🗓️ ${dayWord(b.dayOff,b.date)} · ${b.slot} hs\n💲 $${b.service.price} MXN${b.sena?`\n🔒 Seña recibida: $${SENA} MXN (se descuenta de tu servicio)`:''}\n\n${b.dayOff===0?'Te escribo unas horas antes para recordártelo.':'Te escribo el día anterior para recordártelo.'} Si necesitas cambiar el horario, responde a este mensaje.`,'in','Confirmo · desde el número del negocio');
+  bubble(`📎 Comprobante de seña — $${SENA} MXN`,'out', b.name);
+  bubble(`Recibimos tu comprobante, ${b.name} 📎\n\nTu turno en <b>Barbería Don Rafa</b> quedó <b>apartado</b>:\n💈 ${b.service.name} con ${b.pro}\n🗓️ ${dayWord(b.dayOff,b.date)} · ${b.slot} hs\n\nLa barbería está validando tu seña; en unos minutos te confirmamos por aquí mismo.`,'in','Confirmo · desde el número del negocio');
   countMsg(1);
   go(6); renderPanel();
 }
-function tag(st){ return st==='confirmada'?'<span class="tag t-conf">Confirmada</span>':st==='noshow'?'<span class="tag t-noshow">Plantón</span>':st==='cancelada'?'<span class="tag t-canc">Reprogramada</span>':'<span class="tag t-pend">Pendiente</span>'; }
+function tag(st){ return st==='confirmada'?'<span class="tag t-conf">Confirmada</span>':st==='noshow'?'<span class="tag t-noshow">Plantón</span>':st==='cancelada'?'<span class="tag t-canc">Reprogramada</span>':'<span class="tag t-pend">Esperando seña</span>'; }
 function renderPanel(){
   const ag=document.getElementById('agenda');
   const todayB=bookings.filter(b=>b.dayOff===0);
@@ -270,23 +290,34 @@ function renderPanel(){
     ag.innerHTML='';
     bookings.slice().sort((a,b)=>a.dayOff-b.dayOff||a.slot.localeCompare(b.slot)).forEach(b=>{
       const li=document.createElement('li');
-      li.innerHTML=`<span><b>${b.dayOff===0?'Hoy':b.dayOff===1?'Mañana':shortDay(b.date)} ${b.slot}</b> · ${b.service.name} con ${b.pro} — ${b.name}${b.sena?' <span class="tag t-sena">Seña ✓</span>':''}</span>${tag(b.status)}`;
+      li.innerHTML=`<span><b>${b.dayOff===0?'Hoy':b.dayOff===1?'Mañana':shortDay(b.date)} ${b.slot}</b> · ${b.service.name} con ${b.pro} — ${b.name}${b.sena && b.status!=='esperando'?' <span class="tag t-sena">Seña ✓</span>':''}</span>${tag(b.status)}`;
       ag.appendChild(li);
     });
   }
   const gc=document.getElementById('gcal');
+  const fmtM=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  const win=GC['Rafa'].win[new Date().getDay()];
+  let items='';
+  if(win) items+=`<li><span>🟢 ${fmtM(win[0])}–${fmtM(win[1])} · Atención (ventana de su calendario)</span><span class="tag t-cal">Define horarios</span></li>`;
+  for(const ev of (GC['Rafa'].busy[0]||[])) items+=`<li><span>🚫 ${ev.label}</span><span class="tag t-cal">Bloquea turnos</span></li>`;
   const events=bookings.filter(b=>b.dayOff===0 && b.status!=='cancelada').sort((a,b)=>a.slot.localeCompare(b.slot))
     .map(b=>`<li><span>✂️ ${b.slot} · ${b.service.name} — ${b.name} (vía Confirmo)</span><span class="tag t-cal">Evento</span></li>`).join('');
-  gc.innerHTML = `<li><span>🚫 ${CAL_BLOCK.label}</span><span class="tag t-cal">Bloquea turnos</span></li>` + (events || '<li class="empty">Las reservas de Confirmo aparecen aquí como eventos.</li>');
+  gc.innerHTML = items + events + '<li class="empty">Si Rafa mueve un evento en su Google Calendar, los horarios que ve el cliente cambian solos.</li>';
   const last=bookings.find(b=>b.id===lastId);
-  const active = last && last.status==='pendiente';
-  document.getElementById('btnReminder').disabled = !(active && !last.reminded);
-  document.getElementById('btnConfirm').disabled = !(active && last.reminded);
-  document.getElementById('btnReprog').disabled = !(active && last.reminded);
-  document.getElementById('btnNoshow').disabled = !(last && last.status==='confirmada');
+  const firm = last && last.status==='confirmada';
+  document.getElementById('btnValidate').disabled = !(last && last.status==='esperando');
+  document.getElementById('btnReminder').disabled = !(firm && !last.reminded);
+  document.getElementById('btnConfirm').disabled = !(firm && last.reminded);
+  document.getElementById('btnReprog').disabled = !(firm && last.reminded);
+  document.getElementById('btnNoshow').disabled = !firm;
   document.getElementById('btnSummary').disabled = bookings.length===0;
 }
 
+document.getElementById('btnValidate').onclick=()=>{
+  const b=bookings.find(x=>x.id===lastId); if(!b) return; b.status='confirmada';
+  bubble(`¡Listo, ${b.name}! ✅ Tu seña quedó validada y tu turno está <b>confirmado</b>:\n\n💈 ${b.service.name} con ${b.pro}\n🗓️ ${dayWord(b.dayOff,b.date)} · ${b.slot} hs\n💲 $${b.service.price} MXN · Seña recibida: $${SENA} MXN\n\n${b.dayOff===0?'Te escribo unas horas antes para recordártelo.':'Te escribo el día anterior para recordártelo.'} Si necesitas cambiar el horario, responde a este mensaje.`,'in','Confirmo · turno confirmado');
+  countMsg(1); renderPanel();
+};
 document.getElementById('btnReminder').onclick=()=>{
   const b=bookings.find(x=>x.id===lastId); if(!b) return; b.reminded=true;
   const when = b.dayOff===0 ? 'en unas horas' : 'mañana';
