@@ -1,47 +1,70 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo interna — Confirmo</title>
+<title>Demo interna v2 — Confirmo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c3aed'/%3E%3Cstop offset='1' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M32 52 L45 65 L70 38' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1c2333; background:#f4f4fa; line-height:1.5; }
-  .wrap { max-width:1060px; margin:0 auto; padding:24px 18px 60px; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1c2333; background:#f2f2f9; line-height:1.5; }
+  .wrap { max-width:1080px; margin:0 auto; padding:24px 18px 60px; }
   header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .mark { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#2563eb); display:flex; align-items:center; justify-content:center; color:#fff; font-size:19px; font-weight:700; }
   .brand { font-size:21px; font-weight:700; }
   .badge { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; }
-  h1 { font-size:26px; margin:18px 0 4px; letter-spacing:-.02em; }
-  .sub { color:#5b6478; margin-bottom:22px; }
+  h1 { font-size:27px; margin:18px 0 4px; letter-spacing:-.02em; }
+  .sub { color:#5b6478; margin-bottom:22px; max-width:720px; }
   .grid { display:grid; grid-template-columns:1fr 380px; gap:22px; align-items:start; }
-  @media (max-width:880px){ .grid{ grid-template-columns:1fr; } }
-  .card { background:#fff; border:1px solid #e6e7f0; border-radius:16px; padding:22px; margin-bottom:18px; }
+  @media (max-width:900px){ .grid{ grid-template-columns:1fr; } }
+  .card { background:#fff; border:1px solid #e6e7f0; border-radius:18px; padding:24px; margin-bottom:18px; box-shadow:0 6px 24px rgba(60,50,160,.05); }
   .card h2 { font-size:17px; margin-bottom:4px; }
   .card .hint { color:#5b6478; font-size:13.5px; margin-bottom:14px; }
-  .biz { display:flex; gap:12px; align-items:center; }
-  .biz .avatar { width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg,#111827,#374151); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; }
-  .biz b { font-size:17px; } .biz span { color:#5b6478; font-size:13.5px; display:block; }
-  .lbl { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#6d28d9; margin:16px 0 8px; }
+  .biz { display:flex; gap:12px; align-items:center; padding-bottom:16px; border-bottom:1px solid #eeeef6; margin-bottom:6px; }
+  .biz .avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#111827,#374151); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; }
+  .biz b { font-size:17.5px; } .biz span { color:#5b6478; font-size:13.5px; display:block; }
+  /* Wizard */
+  .steps { display:flex; gap:6px; margin:16px 0 4px; }
+  .steps i { flex:1; height:5px; border-radius:99px; background:#e6e7f0; }
+  .steps i.on { background:linear-gradient(90deg,#7c3aed,#2563eb); }
+  .steplabel { font-size:12.5px; color:#5b6478; margin-bottom:10px; }
+  .q { font-size:20px; font-weight:700; letter-spacing:-.01em; margin:8px 0 14px; }
+  .opts { display:flex; flex-direction:column; gap:9px; }
+  .opt { display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; text-align:left; border:1.5px solid #dcdce9; background:#fff; border-radius:13px; padding:14px 16px; font-size:15.5px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .opt:hover { border-color:#7c3aed; }
+  .opt small { color:#5b6478; font-size:13.5px; white-space:nowrap; }
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { border:1.5px solid #d9dae8; background:#fff; border-radius:999px; padding:8px 14px; font-size:14.5px; cursor:pointer; }
-  .chip small { color:#5b6478; }
-  .chip.sel { border-color:#6d28d9; background:#f3efff; font-weight:600; }
-  .chip:disabled { opacity:.35; cursor:not-allowed; text-decoration:line-through; }
-  input[type=text], input[type=tel] { width:100%; padding:11px 13px; border:1.5px solid #d9dae8; border-radius:10px; font-size:15px; margin-bottom:10px; }
-  .cta { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; border:none; font-weight:700; padding:14px; border-radius:12px; font-size:16px; cursor:pointer; margin-top:6px; }
-  .cta:disabled { opacity:.4; cursor:not-allowed; }
+  .chip { border:1.5px solid #dcdce9; background:#fff; border-radius:12px; padding:10px 13px; font-size:14.5px; cursor:pointer; text-align:center; min-width:64px; }
+  .chip b { display:block; font-size:15px; } .chip span { font-size:12px; color:#5b6478; }
+  .chip.sel { border-color:#6d28d9; background:#f3efff; }
+  .chip:disabled { opacity:.32; cursor:not-allowed; text-decoration:line-through; }
+  .group-lbl { font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8a8fa8; margin:14px 0 7px; }
+  .back { background:none; border:none; color:#6d28d9; font-weight:600; font-size:14.5px; cursor:pointer; padding:6px 0; }
+  input[type=text], input[type=tel] { width:100%; padding:13px 14px; border:1.5px solid #dcdce9; border-radius:11px; font-size:16px; margin-bottom:11px; }
+  .cta { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; border:none; font-weight:700; padding:15px; border-radius:13px; font-size:16px; cursor:pointer; margin-top:8px; }
+  .cta.ghost { background:#fff; color:#374151; border:1.5px solid #dcdce9; }
+  .sena { border:1.5px solid #bbf7d0; background:#f0fdf4; border-radius:13px; padding:16px; font-size:14.5px; margin-bottom:12px; }
+  .sena b { color:#166534; }
+  /* Success */
+  .success { text-align:center; padding:18px 6px 8px; }
+  .bigcheck { width:92px; height:92px; margin:0 auto 16px; border-radius:50%; background:linear-gradient(135deg,#22c55e,#16a34a); display:flex; align-items:center; justify-content:center; color:#fff; font-size:48px; font-weight:800; animation:pop .45s ease; box-shadow:0 12px 28px rgba(22,163,74,.35); }
+  @keyframes pop { 0%{ transform:scale(.4); opacity:0; } 70%{ transform:scale(1.08);} 100%{ transform:scale(1); opacity:1;} }
+  .success h3 { font-size:23px; margin-bottom:6px; }
+  .success p { color:#5b6478; font-size:15px; }
+  .ticket { background:#f8f8fd; border:1px dashed #c9c9de; border-radius:13px; padding:15px 17px; margin:18px 0; text-align:left; font-size:15px; }
+  /* Panel */
   .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   .stat { background:#f8f8fd; border:1px solid #e6e7f0; border-radius:12px; padding:12px; text-align:center; }
   .stat b { font-size:24px; display:block; } .stat span { font-size:12px; color:#5b6478; }
-  .agenda { list-style:none; }
-  .agenda li { display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px dashed #e6e7f0; font-size:14.5px; }
-  .agenda li:last-child { border-bottom:none; }
+  .lbl { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#6d28d9; margin:18px 0 8px; }
+  .agenda, .cal { list-style:none; }
+  .agenda li, .cal li { display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px dashed #e6e7f0; font-size:14.5px; }
+  .agenda li:last-child, .cal li:last-child { border-bottom:none; }
   .tag { font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap; }
   .t-pend { background:#fef3c7; color:#92400e; } .t-conf { background:#dcfce7; color:#166534; }
   .t-noshow { background:#fee2e2; color:#991b1b; } .t-canc { background:#e5e7eb; color:#374151; }
+  .t-cal { background:#e0e7ff; color:#3730a3; } .t-sena { background:#dcfce7; color:#166534; }
   .empty { color:#5b6478; font-size:14px; }
   /* Phone */
   .phone { background:#111827; border-radius:34px; padding:12px; box-shadow:0 18px 40px rgba(20,20,60,.25); position:sticky; top:16px; }
@@ -66,47 +89,35 @@
   <header>
     <div class="mark">✓</div>
     <div class="brand">Confirmo</div>
-    <span class="badge">DEMO INTERNA · PUERTAS ADENTRO · SIN COBROS NI ENVÍOS REALES</span>
+    <span class="badge">DEMO INTERNA V2 · PUERTAS ADENTRO · SIN COBROS NI ENVÍOS REALES</span>
   </header>
 
-  <h1>Así se vive una reserva, de punta a punta</h1>
-  <p class="sub">A la izquierda, lo que hace el cliente en el link del negocio. A la derecha, el WhatsApp tal como lo recibiría — desde el número del negocio. Abajo del teléfono están los botones para simular lo que pasa después.</p>
+  <h1>Reservar es responder 5 preguntas, una por pantalla</h1>
+  <p class="sub">Así interactúa el cliente: llega desde el link del negocio en su celular, elige paso a paso y termina en el tilde. A la derecha, el WhatsApp que recibe — desde el número del negocio — y abajo, lo que ve el dueño.</p>
 
   <div class="grid">
     <div>
       <div class="card">
         <div class="biz">
           <div class="avatar">DR</div>
-          <div><b>Barbería Don Rafa</b><span>Col. Narvarte, CDMX · Negocio de prueba</span></div>
+          <div><b>Barbería Don Rafa</b><span>Col. Narvarte, CDMX · Link de reservas del negocio</span></div>
         </div>
-
-        <div class="lbl">1 · Servicio</div>
-        <div class="chips" id="services"></div>
-
-        <div class="lbl">2 · Profesional</div>
-        <div class="chips" id="pros"></div>
-
-        <div class="lbl">3 · Día y hora</div>
-        <div class="chips" id="slots"></div>
-
-        <div class="lbl">4 · Tus datos</div>
-        <input type="text" id="cname" placeholder="Tu nombre" value="Diego">
-        <input type="tel" id="cphone" placeholder="Tu WhatsApp" value="+52 55 1234 5678">
-        <button class="cta" id="bookBtn">Reservar mi turno</button>
-        <p class="note">En el producto real este paso tarda ~30 segundos y no pide crear ninguna cuenta.</p>
+        <div id="wizard"></div>
       </div>
 
       <div class="card">
         <h2>Panel del dueño</h2>
-        <p class="hint">Lo que Don Rafa ve sin tener que preguntar nada.</p>
+        <p class="hint">Don Rafa entró con su cuenta de Google. Su agenda y su Google Calendar son la misma cosa.</p>
         <div class="stats">
           <div class="stat"><b id="stRes">0</b><span>Reservas de hoy</span></div>
           <div class="stat"><b id="stConf">0</b><span>Confirmadas</span></div>
           <div class="stat"><b id="stNo">0</b><span>Plantones</span></div>
           <div class="stat"><b id="stMsg">0<span style="font-size:13px;color:#5b6478">/600</span></b><span>Mensajes del cupo (MX)</span></div>
         </div>
-        <div class="lbl">Agenda de hoy</div>
-        <ul class="agenda" id="agenda"><li class="empty">Todavía no hay reservas. Hacé la primera desde el formulario.</li></ul>
+        <div class="lbl">Agenda de hoy (Confirmo)</div>
+        <ul class="agenda" id="agenda"><li class="empty">Todavía no hay reservas de hoy.</li></ul>
+        <div class="lbl">Tu Google Calendar hoy</div>
+        <ul class="cal" id="gcal"></ul>
         <div class="lbl">Lista de espera</div>
         <p class="empty" id="waitlist">Valeria está en lista de espera por un turno de hoy. Si se libera uno, Confirmo se lo ofrece solo.</p>
       </div>
@@ -117,18 +128,18 @@
         <div class="screen">
           <div class="wa-head"><b>Barbería Don Rafa</b><span>+52 55 9876 5432 · número del negocio</span></div>
           <div class="wa-body" id="chat">
-            <div class="msg sys">Simulación: estos son los mensajes automáticos de Confirmo, con los textos del kit del piloto.</div>
+            <div class="msg sys">Simulación: mensajes automáticos de Confirmo, con los textos del kit del piloto, en español de México.</div>
           </div>
         </div>
       </div>
       <div class="sim">
-        <button id="btnReminder">⏰ Pasa un día → recordatorio</button>
+        <button id="btnReminder">⏰ Llega el momento del recordatorio</button>
         <button id="btnConfirm">✅ El cliente responde CONFIRMO</button>
         <button id="btnReprog">🔁 El cliente responde REPROGRAMO</button>
         <button id="btnNoshow">🚫 El cliente no se presenta</button>
         <button id="btnSummary">☀️ Resumen del dueño (8:00)</button>
       </div>
-      <p class="note">Los botones se activan según el estado de la última reserva. Recargá la página para empezar de cero.</p>
+      <p class="note">Los botones se activan según el estado de la última reserva. Recarga la página para empezar de cero.</p>
     </div>
   </div>
 </div>
@@ -139,28 +150,96 @@ const SERVICES = [
   {id:'cortebarba', name:'Corte + barba', price:380, mins:50},
   {id:'diseno', name:'Diseño / freestyle', price:300, mins:40},
 ];
-const PROS = ['Rafa','Iván','Sin preferencia'];
-const SLOTS = ['10:00','11:30','13:00','16:00','17:30','19:00'];
-let sel = {service:SERVICES[0], pro:PROS[0], slot:null};
+const PROS = ['Rafa','Iván','El primero disponible'];
+const SLOT_GROUPS = [ ['Mañana',['09:00','10:00','11:30']], ['Tarde',['13:00','16:00','17:30']], ['Noche',['19:00','20:00']] ];
+const SENA = 100;
+// Compromiso personal del dueño HOY (Google Calendar): bloquea las 13:00 de Rafa
+const CAL_BLOCK = { dayOffset:0, slot:'13:00', label:'13:00–14:00 · Compromiso personal' };
+
+const fmtDay = d => d.toLocaleDateString('es-MX',{weekday:'long', day:'numeric', month:'long'});
+const shortDay = d => d.toLocaleDateString('es-MX',{weekday:'short'}).replace('.','');
+function dayDate(offset){ const d=new Date(); d.setDate(d.getDate()+offset); return d; }
+function dayWord(offset, d){
+  if(offset===0) return 'hoy';
+  if(offset===1) return 'mañana';
+  return 'el ' + fmtDay(d);
+}
+function taken(dayOff, slot){
+  if(dayOff===CAL_BLOCK.dayOffset && slot===CAL_BLOCK.slot) return true;
+  return bookings.some(b=>b.dayOff===dayOff && b.slot===slot && b.status!=='cancelada');
+}
+
+let step = 1;
+let sel = { service:null, pro:null, dayOff:null, slot:null, name:'', phone:'', sena:false };
 let bookings = [], msgs = 0, lastId = null, waitlistUsed = false;
 
-function chips(elId, items, render, isSel, onPick, disabledFn){
-  const el = document.getElementById(elId); el.innerHTML='';
-  items.forEach(it=>{
-    const b=document.createElement('button'); b.className='chip'+(isSel(it)?' sel':'');
-    b.innerHTML=render(it); if(disabledFn && disabledFn(it)) b.disabled=true;
-    b.onclick=()=>{ onPick(it); refresh(); }; el.appendChild(b);
-  });
+const W = document.getElementById('wizard');
+function head(n, label){
+  return `<div class="steps">${[1,2,3,4,5].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>
+          <div class="steplabel">Paso ${n} de 5 · ${label}</div>`;
 }
-function slotTaken(s){ return bookings.some(b=>b.slot===s && b.status!=='cancelada'); }
+function backBtn(to){ return `<button class="back" onclick="go(${to})">← Volver</button>`; }
+function go(n){ step=n; renderWizard(); }
 
-function refresh(){
-  chips('services', SERVICES, s=>`${s.name} <small>$${s.price} MXN · ${s.mins} min</small>`, s=>sel.service.id===s.id, s=>sel.service=s);
-  chips('pros', PROS, p=>p, p=>sel.pro===p, p=>sel.pro=p);
-  chips('slots', SLOTS, s=>s, s=>sel.slot===s, s=>sel.slot=s, s=>slotTaken(s));
-  document.getElementById('bookBtn').disabled = !sel.slot;
-  renderPanel();
+function renderWizard(){
+  if(step===1){
+    W.innerHTML = head(1,'Servicio') + `<div class="q">¿Qué te vas a hacer?</div>
+      <div class="opts">${SERVICES.map(s=>`<button class="opt" onclick="pickService('${s.id}')"><span>${s.name}</span><small>$${s.price} MXN · ${s.mins} min</small></button>`).join('')}</div>`;
+  }
+  if(step===2){
+    W.innerHTML = head(2,'Profesional') + `<div class="q">¿Con quién?</div>
+      <div class="opts">${PROS.map(p=>`<button class="opt" onclick="pickPro('${p}')"><span>${p}</span></button>`).join('')}</div>` + backBtn(1);
+  }
+  if(step===3){
+    const days=[0,1,2,3,4,5,6].map(o=>{
+      const d=dayDate(o);
+      const top = o===0?'Hoy':o===1?'Mañana':shortDay(d);
+      return `<button class="chip ${sel.dayOff===o?'sel':''}" onclick="pickDay(${o})"><b>${top}</b><span>${d.getDate()}/${d.getMonth()+1}</span></button>`;
+    }).join('');
+    let slots='';
+    if(sel.dayOff!==null){
+      slots = SLOT_GROUPS.map(([g,ss])=>`<div class="group-lbl">${g}</div><div class="chips">${ss.map(s=>`<button class="chip ${sel.slot===s?'sel':''}" ${taken(sel.dayOff,s)?'disabled':''} onclick="pickSlot('${s}')"><b>${s}</b></button>`).join('')}</div>`).join('')
+        + `<p class="note">Los horarios tachados ya están ocupados o bloqueados: no se ofrecen.</p>`;
+    }
+    W.innerHTML = head(3,'Día y hora') + `<div class="q">¿Qué día?</div><div class="chips">${days}</div>`
+      + (sel.dayOff!==null ? `<div class="q" style="margin-top:20px">¿A qué hora?</div>${slots}` : `<p class="note">Elige primero el día y te muestro los horarios libres.</p>`)
+      + backBtn(2);
+  }
+  if(step===4){
+    W.innerHTML = head(4,'Tus datos') + `<div class="q">¿A nombre de quién?</div>
+      <input type="text" id="cname" placeholder="Tu nombre" value="${sel.name||'Diego'}">
+      <input type="tel" id="cphone" placeholder="Tu WhatsApp (para la confirmación)" value="${sel.phone||'+52 55 1234 5678'}">
+      <p class="note">Sin crear cuenta ni contraseña. La confirmación y el recordatorio te llegan a ese WhatsApp.</p>
+      <button class="cta" onclick="toSena()">Continuar</button>` + backBtn(3);
+  }
+  if(step===5){
+    const b=sel;
+    W.innerHTML = head(5,'Seña opcional') + `<div class="q">¿Aseguras tu turno con una seña?</div>
+      <div class="sena"><b>Seña de $${SENA} MXN</b> — se descuenta del precio de tu ${b.service.name} ($${b.service.price} MXN). Va a la cuenta de la barbería, no a Confirmo. Los turnos con seña casi nunca se plantan.</div>
+      <button class="cta" onclick="book(true)">Pagar seña de $${SENA} y reservar</button>
+      <button class="cta ghost" onclick="book(false)">Reservar sin seña</button>` + backBtn(4);
+  }
+  if(step===6){
+    const b=bookings.find(x=>x.id===lastId);
+    W.innerHTML = `<div class="success">
+      <div class="bigcheck">✓</div>
+      <h3>¡Listo, ${b.name}! Tu turno está confirmado</h3>
+      <p>Te enviamos la confirmación por WhatsApp desde el número de la barbería.</p>
+      <div class="ticket">💈 <b>${b.service.name}</b> con ${b.pro}<br>🗓️ ${fmtDay(b.date)} · 🕐 ${b.slot} hs<br>💲 $${b.service.price} MXN${b.sena?` · Seña pagada: $${SENA} MXN ✓`:''}</div>
+      <button class="cta ghost" onclick="resetWizard()">Hacer otra reserva</button></div>`;
+  }
 }
+function pickService(id){ sel.service=SERVICES.find(s=>s.id===id); go(2); }
+function pickPro(p){ sel.pro=p; go(3); }
+function pickDay(o){ sel.dayOff=o; sel.slot=null; renderWizard(); }
+function pickSlot(s){ sel.slot=s; go(4); }
+function toSena(){
+  sel.name=document.getElementById('cname').value.trim()||'Cliente';
+  sel.phone=document.getElementById('cphone').value.trim();
+  go(5);
+}
+function resetWizard(){ sel={service:null,pro:null,dayOff:null,slot:null,name:'',phone:'',sena:false}; go(1); }
+
 function now(){ const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
 function bubble(html, cls, who){
   const c=document.getElementById('chat');
@@ -169,23 +248,36 @@ function bubble(html, cls, who){
   c.appendChild(d); c.scrollTop=c.scrollHeight;
 }
 function countMsg(n){ msgs+=n; renderPanel(); }
+function book(withSena){
+  const d=dayDate(sel.dayOff);
+  const b={ id:Date.now(), name:sel.name, service:sel.service, pro:sel.pro==='El primero disponible'?'Rafa':sel.pro,
+            dayOff:sel.dayOff, date:d, slot:sel.slot, sena:withSena, status:'pendiente', reminded:false };
+  bookings.push(b); lastId=b.id;
+  bubble(`¡Hola ${b.name}! ✅ Tu reserva en <b>Barbería Don Rafa</b> quedó confirmada:\n\n💈 ${b.service.name} con ${b.pro}\n🗓️ ${dayWord(b.dayOff,b.date)} · ${b.slot} hs\n💲 $${b.service.price} MXN${b.sena?`\n🔒 Seña recibida: $${SENA} MXN (se descuenta de tu servicio)`:''}\n\n${b.dayOff===0?'Te escribo unas horas antes para recordártelo.':'Te escribo el día anterior para recordártelo.'} Si necesitas cambiar el horario, responde a este mensaje.`,'in','Confirmo · desde el número del negocio');
+  countMsg(1);
+  go(6); renderPanel();
+}
 function tag(st){ return st==='confirmada'?'<span class="tag t-conf">Confirmada</span>':st==='noshow'?'<span class="tag t-noshow">Plantón</span>':st==='cancelada'?'<span class="tag t-canc">Reprogramada</span>':'<span class="tag t-pend">Pendiente</span>'; }
 function renderPanel(){
   const ag=document.getElementById('agenda');
-  const today=bookings.filter(b=>b.status!=='cancelada');
-  document.getElementById('stRes').textContent=today.length;
+  const todayB=bookings.filter(b=>b.dayOff===0);
+  document.getElementById('stRes').textContent=todayB.filter(b=>b.status!=='cancelada').length;
   document.getElementById('stConf').textContent=bookings.filter(b=>b.status==='confirmada').length;
   document.getElementById('stNo').textContent=bookings.filter(b=>b.status==='noshow').length;
   document.getElementById('stMsg').innerHTML=msgs+'<span style="font-size:13px;color:#5b6478">/600</span>';
-  if(!bookings.length){ ag.innerHTML='<li class="empty">Todavía no hay reservas. Hacé la primera desde el formulario.</li>'; }
+  if(!bookings.length){ ag.innerHTML='<li class="empty">Todavía no hay reservas de hoy.</li>'; }
   else{
     ag.innerHTML='';
-    bookings.slice().sort((a,b)=>a.slot.localeCompare(b.slot)).forEach(b=>{
+    bookings.slice().sort((a,b)=>a.dayOff-b.dayOff||a.slot.localeCompare(b.slot)).forEach(b=>{
       const li=document.createElement('li');
-      li.innerHTML=`<span><b>${b.slot}</b> · ${b.service.name} con ${b.pro} — ${b.name}</span>${tag(b.status)}`;
+      li.innerHTML=`<span><b>${b.dayOff===0?'Hoy':b.dayOff===1?'Mañana':shortDay(b.date)} ${b.slot}</b> · ${b.service.name} con ${b.pro} — ${b.name}${b.sena?' <span class="tag t-sena">Seña ✓</span>':''}</span>${tag(b.status)}`;
       ag.appendChild(li);
     });
   }
+  const gc=document.getElementById('gcal');
+  const events=bookings.filter(b=>b.dayOff===0 && b.status!=='cancelada').sort((a,b)=>a.slot.localeCompare(b.slot))
+    .map(b=>`<li><span>✂️ ${b.slot} · ${b.service.name} — ${b.name} (vía Confirmo)</span><span class="tag t-cal">Evento</span></li>`).join('');
+  gc.innerHTML = `<li><span>🚫 ${CAL_BLOCK.label}</span><span class="tag t-cal">Bloquea turnos</span></li>` + (events || '<li class="empty">Las reservas de Confirmo aparecen aquí como eventos.</li>');
   const last=bookings.find(b=>b.id===lastId);
   const active = last && last.status==='pendiente';
   document.getElementById('btnReminder').disabled = !(active && !last.reminded);
@@ -195,33 +287,25 @@ function renderPanel(){
   document.getElementById('btnSummary').disabled = bookings.length===0;
 }
 
-document.getElementById('bookBtn').onclick=()=>{
-  const name=document.getElementById('cname').value.trim()||'Cliente';
-  const b={id:Date.now(), name, service:sel.service, pro:sel.pro, slot:sel.slot, status:'pendiente', reminded:false};
-  bookings.push(b); lastId=b.id;
-  bubble(`¡Hola ${name}! ✅ Tu reserva en <b>Barbería Don Rafa</b> quedó confirmada:\n\n💈 ${b.service.name} con ${b.pro}\n🕐 Hoy a las ${b.slot} hs\n💲 $${b.service.price} MXN\n\nTe escribo mañana para recordártelo. Si necesitas cambiar el horario, responde a este mensaje.`,'in','Confirmo · desde el número del negocio');
-  countMsg(1);
-  sel.slot=null; refresh();
-};
-
 document.getElementById('btnReminder').onclick=()=>{
   const b=bookings.find(x=>x.id===lastId); if(!b) return; b.reminded=true;
-  bubble(`¡Hola ${b.name}! Te recuerdo tu turno de hoy en <b>Barbería Don Rafa</b>:\n\n💈 ${b.service.name} con ${b.pro} — ${b.slot} hs\n\nResponde <b>CONFIRMO</b> si vienes seguro, o <b>REPROGRAMO</b> si necesitas otro horario y te ayudamos de inmediato.`,'in','Confirmo · recordatorio');
-  countMsg(1); refresh();
+  const when = b.dayOff===0 ? 'en unas horas' : 'mañana';
+  bubble(`¡Hola ${b.name}! Te recuerdo tu turno ${b.dayOff===0?'<b>de hoy</b>':`<b>de ${dayWord(b.dayOff,b.date)}</b>`} en <b>Barbería Don Rafa</b>:\n\n💈 ${b.service.name} con ${b.pro} — ${b.slot} hs\n\nResponde <b>CONFIRMO</b> si vienes seguro, o <b>REPROGRAMO</b> si necesitas otro horario y te ayudamos de inmediato.`,'in', b.dayOff===0?'Confirmo · recordatorio (mismo día)':'Confirmo · recordatorio (día anterior)');
+  countMsg(1); renderPanel();
 };
 document.getElementById('btnConfirm').onclick=()=>{
   const b=bookings.find(x=>x.id===lastId); if(!b) return;
   bubble(`CONFIRMO`,'out', b.name);
   b.status='confirmada';
-  bubble(`¡Perfecto, ${b.name}! 👍 Te esperamos hoy a las ${b.slot} hs. Cualquier cambio, escríbenos por aquí.`,'in','Confirmo');
-  refresh();
+  bubble(`¡Perfecto, ${b.name}! 👍 Te esperamos ${dayWord(b.dayOff,b.date)} a las ${b.slot} hs. Cualquier cambio, escríbenos por aquí.`,'in','Confirmo');
+  renderPanel();
 };
 document.getElementById('btnReprog').onclick=()=>{
   const b=bookings.find(x=>x.id===lastId); if(!b) return;
   bubble(`REPROGRAMO`,'out', b.name);
   b.status='cancelada';
-  bubble(`Sin problema, ${b.name}. Liberé tu turno de las ${b.slot} hs. ¿Qué otro horario te queda bien? Te paso los disponibles por aquí mismo.`,'in','Confirmo');
-  if(!waitlistUsed){
+  bubble(`Sin problema, ${b.name}. Liberé tu turno de ${dayWord(b.dayOff,b.date)} a las ${b.slot} hs. ¿Qué otro día y hora te queda bien? Te paso los disponibles por aquí mismo.`,'in','Confirmo');
+  if(!waitlistUsed && b.dayOff===0){
     waitlistUsed=true;
     setTimeout(()=>{
       bubble(`¡Hola Valeria! Se liberó un turno hoy a las ${b.slot} hs en <b>Barbería Don Rafa</b> (${b.service.name}). Estabas en lista de espera: ¿lo quieres? Responde <b>SÍ</b> y queda tuyo.`,'in','Confirmo · lista de espera');
@@ -230,21 +314,23 @@ document.getElementById('btnReprog').onclick=()=>{
       renderPanel();
     }, 900);
   }
-  refresh();
+  renderPanel();
 };
 document.getElementById('btnNoshow').onclick=()=>{
   const b=bookings.find(x=>x.id===lastId); if(!b) return; b.status='noshow';
-  bubble(`Hola ${b.name}, te esperábamos hoy a las ${b.slot} hs y no pudimos atenderte. ¿Quieres que te reagende? Tengo lugar mañana a la misma hora. Responde <b>SÍ</b> y te lo aparto.`,'in','Confirmo · recuperar al cliente');
-  countMsg(1); refresh();
+  bubble(`Hola ${b.name}, te esperábamos ${dayWord(b.dayOff,b.date)} a las ${b.slot} hs y no pudimos atenderte. ¿Quieres que te reagende? Te aparto el mismo horario de mañana si me respondes <b>SÍ</b>.`,'in','Confirmo · recuperar al cliente');
+  countMsg(1); renderPanel();
 };
 document.getElementById('btnSummary').onclick=()=>{
-  const list=bookings.filter(b=>b.status!=='cancelada').sort((a,b)=>a.slot.localeCompare(b.slot))
-    .map(b=>`· ${b.slot} — ${b.name} (${b.service.name}, ${b.pro}) ${b.status==='confirmada'?'✅':b.status==='noshow'?'🚫 plantón':'⏳ por confirmar'}`).join('\n') || 'Sin reservas.';
+  const list=bookings.filter(b=>b.dayOff===0 && b.status!=='cancelada').sort((a,b)=>a.slot.localeCompare(b.slot))
+    .map(b=>`· ${b.slot} — ${b.name} (${b.service.name}, ${b.pro}) ${b.status==='confirmada'?'✅':b.status==='noshow'?'🚫 plantón':'⏳ por confirmar'}`).join('\n');
+  const future=bookings.filter(b=>b.dayOff>0 && b.status!=='cancelada')
+    .map(b=>`· ${dayWord(b.dayOff,b.date)} ${b.slot} — ${b.name} (${b.service.name})`).join('\n');
   const conf=bookings.filter(b=>b.status==='confirmada').length, no=bookings.filter(b=>b.status==='noshow').length;
-  bubble(`☀️ <b>Buenos días, Rafa — tu día en Barbería Don Rafa:</b>\n\n${list}\n\n✅ Confirmadas: ${conf} · 🚫 Plantones: ${no} · ✉️ Mensajes usados: ${msgs} de 600\n\nQue tengas un gran día. Sin plantones. 💪`,'in','Confirmo · resumen para el dueño');
-  refresh();
+  bubble(`☀️ <b>Buenos días, Rafa — tu día en Barbería Don Rafa:</b>\n\n${list||'Sin turnos hoy.'}${future?`\n\nPróximos días:\n${future}`:''}\n\n✅ Confirmadas: ${conf} · 🚫 Plantones: ${no} · ✉️ Mensajes usados: ${msgs} de 600\n\nQue tengas un gran día. Sin plantones. 💪`,'in','Confirmo · resumen para el dueño');
+  renderPanel();
 };
-refresh();
+renderWizard(); renderPanel();
 </script>
 </body>
 </html>
